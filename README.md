@@ -1,45 +1,70 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-_node-name_
 
-# n8n-nodes-starter
+This is an n8n community node that allows you to integrate Supadata AI into your n8n workflows.
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+Supadata AI is a powerful service that provides tools for extracting and analyzing data from YouTube videos, channels, and web pages. With this node, you can easily retrieve video details, transcripts, channel information, and scrape web content directly within your n8n workflows.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+Supadata Website: [text](https://supadata.ai/)
 
-## Prerequisites
+n8n is a fair-code licensed workflow automation platform.
 
-You need the following installed on your development machine:
+## Installation
 
-* [git](https://git-scm.com/downloads)
-* Node.js and pnpm. Minimum version Node 18. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  pnpm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+Community Node Installation
 
-## Using this starter
+- Go to Settings > Community Nodes
+- Select Install
+- Enter n8n-nodes-supadata-ai in the input field
+- Click Install
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+Manual Installation
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `pnpm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `pnpm lint` to check for errors or `pnpm lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+- To install this node manually
 
-## More information
+```bash
+npm install n8n-nodes-supadata-ai
+```
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+## Operations
+
+- Get Video Metadata: Retrieve details about a YouTube video.
+- Get Transcript: Fetch the transcript of a YouTube video.
+- Get Channel Metadata: Retrieve information about a YouTube channel.
+- Get Channel Videos: Fetch a list of videos from a specific YouTube channel.
+- Get URL Content: Extract data from a web page.
+
+## Credentials
+
+To use this node, you need to authenticate with Supadata AI using an API key. Follow these steps:
+
+- Sign up for an account with Supadata AI and obtain your API key.
+- Store your API key securely using environment variables. Never share it or commit it to version control.
+- Include the API key in the request headers when making API calls:
+
+```bash
+curl -H "x-api-key: YOUR_API_KEY" https://api.supadata.ai/v1/...
+```
+
+## Compatibility
+
+_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+
+## Usage
+
+1. Create a new workflow in n8n.
+2. Add a Supadata node to your workflow
+3. Enter your API key.
+4. Select the action you want to perform, and enter the required fields.
+5. Execute the node.
+
+## Resources
+
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+- _Link to app/service documentation._
+
+## Version history
+
+Tested for n8n
 
 ## License
 

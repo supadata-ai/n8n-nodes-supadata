@@ -1,19 +1,19 @@
 {
-  "name": "n8n-nodes-<...>",
+  "name": "n8n-nodes-supadata-ai",
   "version": "0.1.0",
-  "description": "",
+  "description": "Tool for extracting content from YouTube videos and web pages",
   "keywords": [
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://supadata.ai/",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Dumpling Software",
+    "email": "support@supadata.ai"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "https://github.com/supadata-ai"
   },
   "engines": {
     "node": ">=18.10",
@@ -36,15 +36,14 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ExampleCredentialsApi.credentials.js",
-      "dist/credentials/HttpBinApi.credentials.js"
+      "dist/credentials/Supadata.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/ExampleNode/ExampleNode.node.js",
-      "dist/nodes/HttpBin/HttpBin.node.js"
+      "dist/nodes/Supadata/Supadata.node.js"
     ]
   },
   "devDependencies": {
+    "@types/node": "^22.13.10",
     "@typescript-eslint/parser": "^7.15.0",
     "eslint": "^8.56.0",
     "eslint-plugin-n8n-nodes-base": "^1.16.1",
