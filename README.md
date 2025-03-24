@@ -1,10 +1,10 @@
-# n8n-nodes-_node-name_
+# n8n-nodes-supadata-ai
 
 This is an n8n community node that allows you to integrate Supadata AI into your n8n workflows.
 
 Supadata AI is a powerful service that provides tools for extracting and analyzing data from YouTube videos, channels, and web pages. With this node, you can easily retrieve video details, transcripts, channel information, and scrape web content directly within your n8n workflows.
 
-Supadata Website: [text](https://supadata.ai/)
+Supadata Website: [https://supadata.ai](https://supadata.ai)
 
 n8n is a fair-code licensed workflow automation platform.
 
@@ -52,8 +52,8 @@ _State the minimum n8n version, as well as which versions you test against. You 
 ## Usage
 
 1. Create a new workflow in n8n.
-2. Add a Supadata node to your workflow
-3. Enter your API key.
+2. Add a Supadata node to your workflow.
+3. Authenticate using your Supadata API key via n8n’s credentials interface.
 4. Select the action you want to perform, and enter the required fields.
 5. Execute the node.
 
@@ -61,10 +61,6 @@ _State the minimum n8n version, as well as which versions you test against. You 
 
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
 - _Link to app/service documentation._
-
-## Version history
-
-Tested for n8n
 
 ## License
 
