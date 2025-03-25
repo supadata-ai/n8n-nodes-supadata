@@ -60,7 +60,7 @@ _State the minimum n8n version, as well as which versions you test against. You 
 ## Resources
 
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-- _Link to app/service documentation._
+- [Supadata API Documentation](https://supadata.ai/documentation/getting-started)
 
 ## License
 
