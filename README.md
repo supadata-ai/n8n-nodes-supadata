@@ -37,6 +37,8 @@ npm install n8n-nodes-supadata
 - Get Transcript: Fetch the transcript of a YouTube video.
 - Get Channel Metadata: Retrieve information about a YouTube channel.
 - Get Channel Videos: Fetch a list of videos from a specific YouTube channel.
+- Get Playlist Metadata: Retrieve information about a YouTube playlist.
+- Get Playlist Videos: Fetch a list of videos from a specific YouTube playlist.
 - Get URL Content: Extract data from a web page.
 
 ## Credentials

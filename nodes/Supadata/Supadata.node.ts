@@ -7,7 +7,7 @@ import {
 	type IHttpRequestMethods,
 } from 'n8n-workflow';
 
-import { supadataApiRequest, extractVideoIdFromUrl } from './GenericFunctions';
+import { supadataApiRequest } from './GenericFunctions';
 
 export class Supadata implements INodeType {
 	description: INodeTypeDescription = {
@@ -101,29 +101,7 @@ export class Supadata implements INodeType {
 
 			// YouTube Video Fields
 			{
-				displayName: 'Input Type',
-				name: 'inputType',
-				type: 'options',
-				options: [
-					{
-						name: 'Video ID',
-						value: 'videoId',
-					},
-					{
-						name: 'Video URL',
-						value: 'videoUrl',
-					},
-				],
-				default: 'videoId',
-				displayOptions: {
-					show: {
-						resource: ['youtube'],
-						operation: ['getVideo', 'getTranscript'],
-					},
-				},
-			},
-			{
-				displayName: 'Video ID',
+				displayName: 'Video',
 				name: 'videoId',
 				type: 'string',
 				default: '',
@@ -132,27 +110,10 @@ export class Supadata implements INodeType {
 					show: {
 						resource: ['youtube'],
 						operation: ['getVideo', 'getTranscript'],
-						inputType: ['videoId'],
-					},
-				},
-				placeholder: 'dQw4w9WgXcQ',
-				description: 'The ID of the YouTube video',
-			},
-			{
-				displayName: 'Video URL',
-				name: 'videoUrl',
-				type: 'string',
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['youtube'],
-						operation: ['getVideo', 'getTranscript'],
-						inputType: ['videoUrl'],
 					},
 				},
 				placeholder: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-				description: 'The URL of the YouTube video',
+				description: 'The ID or URL of the YouTube video',
 			},
 			{
 				displayName: 'Return as Plain Text',
@@ -179,7 +140,6 @@ export class Supadata implements INodeType {
 					show: {
 						resource: ['youtube'],
 						operation: ['getChannel', 'getChannelVideos'],
-						inputType: ['channelId'],
 					},
 				},
 				placeholder: 'https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw',
@@ -213,7 +173,6 @@ export class Supadata implements INodeType {
 					show: {
 						resource: ['youtube'],
 						operation: ['getPlaylist', 'getPlaylistVideos'],
-						inputType: ['playlistId'],
 					},
 				},
 				placeholder: 'https://www.youtube.com/playlist?list=PLlaN88a7y2_plecYoJxvRFTLHVbIVAOoc',
@@ -290,39 +249,42 @@ export class Supadata implements INodeType {
 
 				if (resource === 'youtube') {
 					if (operation === 'getVideo') {
-						const inputType = this.getNodeParameter('inputType', i) as string;
-						const videoIdentifier =
-							inputType === 'videoId'
-								? (this.getNodeParameter('videoId', i) as string)
-								: extractVideoIdFromUrl(
-										this.getNodeParameter('videoUrl', i) as string,
-										this.getNode(),
-									);
+						const videoInput = this.getNodeParameter('videoId', i) as string;
+						const qs: IDataObject = {};
+
+						// Check if input is a URL  or ID
+						if (videoInput.includes('youtube.com/') || videoInput.includes('youtu.be/')) {
+							qs.url = videoInput;
+						} else {
+							qs.videoId = videoInput;
+						}
 
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
 							'/youtube/video',
 							{},
-							{ id: videoIdentifier },
+							qs,
 						);
 					} else if (operation === 'getTranscript') {
-						const inputType = this.getNodeParameter('inputType', i) as string;
-						const videoIdentifier =
-							inputType === 'videoId'
-								? (this.getNodeParameter('videoId', i) as string)
-								: extractVideoIdFromUrl(
-										this.getNodeParameter('videoUrl', i) as string,
-										this.getNode(),
-									);
-						const text = this.getNodeParameter('text', i) as boolean;
+						const videoInput = this.getNodeParameter('videoId', i) as string;
+						const qs: IDataObject = {
+							text: this.getNodeParameter('text', i) as boolean,
+						};
+
+						// Check if input is a URL  or ID
+						if (videoInput.includes('youtube.com/') || videoInput.includes('youtu.be/')) {
+							qs.url = videoInput;
+						} else {
+							qs.videoId = videoInput;
+						}
 
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
 							'/youtube/transcript',
 							{},
-							{ id: videoIdentifier, text },
+							qs,
 						);
 					} else if (operation === 'getChannel') {
 						const channelIdentifier = this.getNodeParameter('channelId', i) as string;

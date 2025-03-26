@@ -7,7 +7,6 @@ import type {
 	IHttpRequestOptions,
 } from 'n8n-workflow';
 import { NodeApiError } from 'n8n-workflow';
-import { NodeOperationError, type INode } from 'n8n-workflow';
 
 /**
  * Make an API request to Supadata
@@ -84,16 +83,3 @@ export async function supadataApiRequestAllItems(
 
 	return returnData;
 }
-
-// Helper function to extract video ID from YouTube URL
-export const extractVideoIdFromUrl = (url: string, node: INode): string => {
-	const regex =
-		/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-	const match = url.match(regex);
-
-	if (!match) {
-		throw new NodeOperationError(node, 'Invalid YouTube Video URL. Unable to extract video ID.');
-	}
-
-	return match[1];
-};
