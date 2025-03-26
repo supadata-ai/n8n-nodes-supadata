@@ -249,22 +249,13 @@ export class Supadata implements INodeType {
 
 				if (resource === 'youtube') {
 					if (operation === 'getVideo') {
-						const videoInput = this.getNodeParameter('videoId', i) as string;
-						const qs: IDataObject = {};
-
-						// Check if input is a URL  or ID
-						if (videoInput.includes('youtube.com/') || videoInput.includes('youtu.be/')) {
-							qs.url = videoInput;
-						} else {
-							qs.videoId = videoInput;
-						}
-
+						const videoIdentifier = this.getNodeParameter('videoId', i) as string;
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
 							'/youtube/video',
 							{},
-							qs,
+							{ id: videoIdentifier },
 						);
 					} else if (operation === 'getTranscript') {
 						const videoInput = this.getNodeParameter('videoId', i) as string;
