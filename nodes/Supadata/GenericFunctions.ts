@@ -73,9 +73,6 @@ export async function supadataApiRequestAllItems(
 	do {
 		// Make the API request
 		responseData = await supadataApiRequest.call(this, method, endpoint, body, query);
-
-		console.log('responseData in apiallitems:', responseData);
-
 		// Add the retrieved items to the returnData array
 		if (responseData[propertyName]) {
 			returnData.push(...responseData[propertyName]);
@@ -96,21 +93,6 @@ export const extractVideoIdFromUrl = (url: string, node: INode): string => {
 
 	if (!match) {
 		throw new NodeOperationError(node, 'Invalid YouTube Video URL. Unable to extract video ID.');
-	}
-
-	return match[1];
-};
-
-// Helper function to extract channel ID from YouTube URL
-export const extractChannelIdFromUrl = (url: string, node: INode): string => {
-	const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:channel\/|c\/|@)([a-zA-Z0-9_-]+)/;
-	const match = url.match(regex);
-
-	if (!match) {
-		throw new NodeOperationError(
-			node,
-			'Invalid YouTube Channel URL. Unable to extract channel ID.',
-		);
 	}
 
 	return match[1];

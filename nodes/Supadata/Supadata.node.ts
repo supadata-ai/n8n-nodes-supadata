@@ -7,11 +7,7 @@ import {
 	type IHttpRequestMethods,
 } from 'n8n-workflow';
 
-import {
-	supadataApiRequest,
-	extractVideoIdFromUrl,
-	extractChannelIdFromUrl,
-} from './GenericFunctions';
+import { supadataApiRequest, extractVideoIdFromUrl } from './GenericFunctions';
 
 export class Supadata implements INodeType {
 	description: INodeTypeDescription = {
@@ -64,18 +60,6 @@ export class Supadata implements INodeType {
 				},
 				options: [
 					{
-						name: 'Get Video',
-						value: 'getVideo',
-						description: 'Get details of a YouTube video',
-						action: 'Get video details',
-					},
-					{
-						name: 'Get Transcript',
-						value: 'getTranscript',
-						description: 'Get the transcript of a YouTube video',
-						action: 'Get video transcript',
-					},
-					{
 						name: 'Get Channel',
 						value: 'getChannel',
 						description: 'Get details of a YouTube channel',
@@ -86,6 +70,30 @@ export class Supadata implements INodeType {
 						value: 'getChannelVideos',
 						description: 'Get videos of a YouTube channel',
 						action: 'Get channel videos',
+					},
+					{
+						name: 'Get Playlist',
+						value: 'getPlaylist',
+						description: 'Get details of a YouTube playlist',
+						action: 'Get playlist details',
+					},
+					{
+						name: 'Get Playlist Videos',
+						value: 'getPlaylistVideos',
+						description: 'Get videos of a YouTube playlist',
+						action: 'Get playlist videos',
+					},
+					{
+						name: 'Get Transcript',
+						value: 'getTranscript',
+						description: 'Get the transcript of a YouTube video',
+						action: 'Get video transcript',
+					},
+					{
+						name: 'Get Video',
+						value: 'getVideo',
+						description: 'Get details of a YouTube video',
+						action: 'Get video details',
 					},
 				],
 				default: 'getVideo',
@@ -162,29 +170,7 @@ export class Supadata implements INodeType {
 
 			// YouTube Channel Fields
 			{
-				displayName: 'Input Type',
-				name: 'inputType',
-				type: 'options',
-				options: [
-					{
-						name: 'Channel ID',
-						value: 'channelId',
-					},
-					{
-						name: 'Channel URL',
-						value: 'channelUrl',
-					},
-				],
-				default: 'channelId',
-				displayOptions: {
-					show: {
-						resource: ['youtube'],
-						operation: ['getChannel'],
-					},
-				},
-			},
-			{
-				displayName: 'Channel ID',
+				displayName: 'Channel',
 				name: 'channelId',
 				type: 'string',
 				default: '',
@@ -192,56 +178,12 @@ export class Supadata implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['youtube'],
-						operation: ['getChannel'],
+						operation: ['getChannel', 'getChannelVideos'],
 						inputType: ['channelId'],
 					},
 				},
-				placeholder: 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-				description: 'The ID of the YouTube channel',
-			},
-			{
-				displayName: 'Channel URL',
-				name: 'channelUrl',
-				type: 'string',
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['youtube'],
-						operation: ['getChannel'],
-						inputType: ['channelUrl'],
-					},
-				},
 				placeholder: 'https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw',
-				description: 'The URL of the YouTube channel',
-			},
-			{
-				displayName: 'Channel ID',
-				name: 'channelId',
-				type: 'string',
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['youtube'],
-						operation: ['getChannelVideos'],
-					},
-				},
-				placeholder: 'UC_x5XG1OV2P6uZZ5FSM9Ttw',
-				description: 'The ID of the YouTube channel',
-			},
-			{
-				displayName: 'Return All',
-				name: 'returnAll',
-				type: 'boolean',
-				default: false,
-				displayOptions: {
-					show: {
-						resource: ['youtube'],
-						operation: ['getChannelVideos'],
-					},
-				},
-				description: 'Whether to return all results or only up to a given limit',
+				description: 'The ID or URL of the YouTube channel',
 			},
 			{
 				displayName: 'Limit',
@@ -252,7 +194,40 @@ export class Supadata implements INodeType {
 					show: {
 						resource: ['youtube'],
 						operation: ['getChannelVideos'],
-						returnAll: [false],
+					},
+				},
+				typeOptions: {
+					minValue: 1,
+					maxValue: 5000, // eslint-disable-line n8n-nodes-base/node-param-type-options-max-value-present
+				},
+				description: 'Max number of results to return',
+			},
+			// YouTube Playlist Fields
+			{
+				displayName: 'Playlist',
+				name: 'playlistId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['youtube'],
+						operation: ['getPlaylist', 'getPlaylistVideos'],
+						inputType: ['playlistId'],
+					},
+				},
+				placeholder: 'https://www.youtube.com/playlist?list=PLlaN88a7y2_plecYoJxvRFTLHVbIVAOoc',
+				description: 'The ID or URL of the YouTube playlist',
+			},
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				default: 50,
+				displayOptions: {
+					show: {
+						resource: ['youtube'],
+						operation: ['getPlaylistVideos'],
 					},
 				},
 				typeOptions: {
@@ -350,15 +325,7 @@ export class Supadata implements INodeType {
 							{ id: videoIdentifier, text },
 						);
 					} else if (operation === 'getChannel') {
-						const inputType = this.getNodeParameter('inputType', i) as string;
-						const channelIdentifier =
-							inputType === 'channelId'
-								? (this.getNodeParameter('channelId', i) as string)
-								: extractChannelIdFromUrl(
-										this.getNodeParameter('channelUrl', i) as string,
-										this.getNode(),
-									);
-
+						const channelIdentifier = this.getNodeParameter('channelId', i) as string;
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
@@ -368,17 +335,39 @@ export class Supadata implements INodeType {
 						);
 					} else if (operation === 'getChannelVideos') {
 						const channelId = this.getNodeParameter('channelId', i) as string;
-						const returnAll = this.getNodeParameter('returnAll', i) as boolean;
-						const qs: IDataObject = { id: channelId };
-
-						if (!returnAll) {
-							qs.limit = this.getNodeParameter('limit', i) as number;
-						}
+						const qs: IDataObject = {
+							id: channelId,
+							limit: this.getNodeParameter('limit', i) as number,
+						};
 
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
 							'/youtube/channel/videos',
+							{},
+							qs,
+						);
+						responseData = responseData.videoIds;
+					} else if (operation === 'getPlaylist') {
+						const playlistIdentifier = this.getNodeParameter('playlistId', i) as string;
+						responseData = await supadataApiRequest.call(
+							this,
+							'GET' as IHttpRequestMethods,
+							'/youtube/playlist',
+							{},
+							{ id: playlistIdentifier },
+						);
+					} else if (operation === 'getPlaylistVideos') {
+						const playlistIdentifier = this.getNodeParameter('playlistId', i) as string;
+						const qs: IDataObject = {
+							id: playlistIdentifier,
+							limit: this.getNodeParameter('limit', i) as number,
+						};
+
+						responseData = await supadataApiRequest.call(
+							this,
+							'GET' as IHttpRequestMethods,
+							'/youtube/playlist/videos',
 							{},
 							qs,
 						);
