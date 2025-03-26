@@ -1,14 +1,19 @@
 {
-  "name": "n8n-nodes-supadata-ai",
+  "name": "n8n-nodes-supadata",
   "version": "0.1.0",
   "description": "Tool for extracting content from YouTube videos and web pages",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "supadata",
+    "scraper",
+    "youtube",
+    "web",
+    "transcript"
   ],
   "license": "MIT",
   "homepage": "https://supadata.ai/",
   "author": {
-    "name": "Dumpling Software",
+    "name": "Rafal Zawadzki",
     "email": "support@supadata.ai"
   },
   "repository": {

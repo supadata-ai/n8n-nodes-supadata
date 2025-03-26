@@ -1,12 +1,19 @@
-# n8n-nodes-supadata-ai
+# n8n-nodes-supadata
 
-This is an n8n community node that allows you to integrate Supadata AI into your n8n workflows.
+This is an n8n community node that allows you to integrate Supadata into your n8n workflows.
 
-Supadata AI is a powerful service that provides tools for extracting and analyzing data from YouTube videos, channels, and web pages. With this node, you can easily retrieve video details, transcripts, channel information, and scrape web content directly within your n8n workflows.
+Supadata is a service that provides tools for extracting and analyzing data from YouTube videos, channels, and web pages. With this node, you can easily retrieve video details, transcripts, channel information, and scrape web content directly within your n8n workflows.
 
 Supadata Website: [https://supadata.ai](https://supadata.ai)
 
-n8n is a fair-code licensed workflow automation platform.
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
+
+[Installation](#installation)  
+[Operations](#operations)  
+[Credentials](#credentials)  <!-- delete if no auth needed -->  
+[Compatibility](#compatibility)  
+[Usage](#usage)  <!-- delete if not using this section -->  
+[Resources](#resources)  
 
 ## Installation
 
@@ -14,7 +21,7 @@ Community Node Installation
 
 - Go to Settings > Community Nodes
 - Select Install
-- Enter n8n-nodes-supadata-ai in the input field
+- Enter n8n-nodes-supadata in the input field
 - Click Install
 
 Manual Installation
@@ -22,7 +29,7 @@ Manual Installation
 - To install this node manually
 
 ```bash
-npm install n8n-nodes-supadata-ai
+npm install n8n-nodes-supadata
 ```
 
 ## Operations

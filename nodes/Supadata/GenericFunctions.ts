@@ -32,6 +32,7 @@ export async function supadataApiRequest(
 		method,
 		headers: {
 			'x-api-key': credentials.apiKey as string,
+			'user-agent': 'n8n',
 			'Content-Type': 'application/json',
 			Accept: 'application/json',
 		},
