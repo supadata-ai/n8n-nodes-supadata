@@ -41,7 +41,7 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/Supadata.credentials.js"
+      "dist/credentials/SupadataApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/Supadata/Supadata.node.js"
