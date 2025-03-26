@@ -10,10 +10,9 @@ Supadata Website: [https://supadata.ai](https://supadata.ai)
 
 [Installation](#installation)  
 [Operations](#operations)  
-[Credentials](#credentials)  <!-- delete if no auth needed -->  
-[Compatibility](#compatibility)  
-[Usage](#usage)  <!-- delete if not using this section -->  
-[Resources](#resources)  
+[Credentials](#credentials) <!-- delete if no auth needed -->  
+[Usage](#usage) <!-- delete if not using this section -->  
+[Resources](#resources)
 
 ## Installation
 
@@ -42,19 +41,10 @@ npm install n8n-nodes-supadata
 
 ## Credentials
 
-To use this node, you need to authenticate with Supadata AI using an API key. Follow these steps:
+To use this node, you need to authenticate with Supadata using an API key. Follow these steps:
 
-- Sign up for an account with Supadata AI and obtain your API key.
-- Store your API key securely using environment variables. Never share it or commit it to version control.
-- Include the API key in the request headers when making API calls:
-
-```bash
-curl -H "x-api-key: YOUR_API_KEY" https://api.supadata.ai/v1/...
-```
-
-## Compatibility
-
-_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+- Sign up for an account with Supadata and obtain your API key.
+- Add the API key to the Supadata node in n8n credentials.
 
 ## Usage
 

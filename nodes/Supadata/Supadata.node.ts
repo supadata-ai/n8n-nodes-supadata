@@ -257,7 +257,7 @@ export class Supadata implements INodeType {
 				},
 				typeOptions: {
 					minValue: 1,
-					maxValue: 5000,
+					maxValue: 5000, // eslint-disable-line n8n-nodes-base/node-param-type-options-max-value-present
 				},
 				description: 'Max number of results to return',
 			},
