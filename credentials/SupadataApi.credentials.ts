@@ -20,7 +20,7 @@ export class SupadataApi implements ICredentialType {
 	authenticate = {
 		type: 'generic',
 		properties: {
-			qs: {
+			headers: {
 				'x-api-key': '={{$credentials.apiKey}}',
 			},
 		},
