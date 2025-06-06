@@ -1,4 +1,4 @@
-import { ICredentialType, INodeProperties } from 'n8n-workflow';
+import { ICredentialType, INodeProperties, ICredentialTestRequest } from 'n8n-workflow';
 
 export class SupadataApi implements ICredentialType {
 	name = 'supadataApi';
@@ -25,6 +25,13 @@ export class SupadataApi implements ICredentialType {
 			},
 		},
 	} as const;
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: 'https://api.supadata.ai',
+			url: '/v1/health',
+			method: 'GET',
+		},
+	};
 }
 
 module.exports = { SupadataApi };
