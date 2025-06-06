@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-supadata",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Tool for extracting content from YouTube videos and web pages",
   "keywords": [
     "n8n-community-node-package",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/supadata-ai"
+    "url": "https://github.com/supadata-ai/n8n-nodes-supadata"
   },
   "engines": {
     "node": ">=18.10",
