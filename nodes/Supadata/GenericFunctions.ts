@@ -18,19 +18,9 @@ export async function supadataApiRequest(
 	body: IDataObject = {},
 	query: IDataObject = {},
 ): Promise<any> {
-	// Get the API key from credentials
-	const credentials = await this.getCredentials('supadataApi');
-
-	if (!credentials?.apiKey) {
-		throw new NodeApiError(this.getNode(), {
-			message: 'No API key found in credentials',
-		});
-	}
-
 	const options: IHttpRequestOptions = {
 		method,
 		headers: {
-			'x-api-key': credentials.apiKey as string,
 			'user-agent': 'n8n',
 			'Content-Type': 'application/json',
 			Accept: 'application/json',
@@ -46,8 +36,8 @@ export async function supadataApiRequest(
 	}
 
 	try {
-		// Make the API request
-		return await this.helpers.httpRequest(options);
+		// Make the API request with authentication
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'supadataApi', options);
 	} catch (error) {
 		// Handle errors using NodeApiError
 		throw new NodeApiError(this.getNode(), error as JsonObject);
