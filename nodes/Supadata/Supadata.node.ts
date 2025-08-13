@@ -13,7 +13,7 @@ export class Supadata implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Supadata',
 		name: 'supadata',
-		icon: 'file:Supadata.svg',
+		icon: 'file:supadata.svg',
 		group: ['input'],
 		version: 1,
 		description: 'Access Supadata API to fetch YouTube and web data',
