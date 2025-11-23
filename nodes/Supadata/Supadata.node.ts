@@ -18,6 +18,7 @@ export class Supadata implements INodeType {
 		version: 1,
 		description: 'Access Supadata API to fetch video metadata, transcripts, and web data from multiple platforms',
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+		documentationUrl: 'https://docs.supadata.ai',
 		defaults: {
 			name: 'Supadata',
 		},
