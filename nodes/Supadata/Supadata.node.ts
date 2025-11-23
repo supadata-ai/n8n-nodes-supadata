@@ -16,8 +16,9 @@ export class Supadata implements INodeType {
 		icon: 'file:supadata.svg',
 		group: ['input'],
 		version: 1,
-		description: 'Access Supadata API to fetch YouTube and web data',
+		description: 'Access Supadata API to fetch video metadata, transcripts, and web data from multiple platforms',
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+		documentationUrl: 'https://docs.supadata.ai',
 		defaults: {
 			name: 'Supadata',
 		},
@@ -39,10 +40,115 @@ export class Supadata implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
+					{ name: 'Media', value: 'media' },
 					{ name: 'YouTube', value: 'youtube' },
 					{ name: 'Web', value: 'webScrape' },
 				],
-				default: 'youtube',
+				default: 'media',
+			},
+
+			// --------------------------------------------------------------------------------------------------------
+			//         Media Operations (Universal - works across platforms)
+			// --------------------------------------------------------------------------------------------------------
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['media'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Metadata',
+						value: 'getMetadata',
+						description: 'Get metadata of a video from multiple platforms (YouTube, TikTok, Instagram, Twitter)',
+						action: 'Get metadata',
+					},
+					{
+						name: 'Get Transcript',
+						value: 'getTranscript',
+						description: 'Get the transcript of a video from multiple platforms (YouTube, TikTok, etc.)',
+						action: 'Get transcript',
+					},
+				],
+				default: 'getMetadata',
+			},
+
+			// Media Fields
+			{
+				displayName: 'Video URL',
+				name: 'videoUrl',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getMetadata', 'getTranscript'],
+					},
+				},
+				placeholder: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+				description: 'The URL of the video (supports YouTube, TikTok, Instagram, Twitter, and other platforms)',
+			},
+			{
+				displayName: 'Return as Plain Text',
+				name: 'text',
+				type: 'boolean',
+				default: false,
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getTranscript'],
+					},
+				},
+				description: 'Whether to return the transcript as plain text',
+			},
+			{
+				displayName: 'Language',
+				name: 'lang',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getTranscript'],
+					},
+				},
+				placeholder: 'en',
+				description: 'Preferred language code (ISO 639-1). If not provided or unavailable, defaults to first available language.',
+			},
+			{
+				displayName: 'Mode',
+				name: 'mode',
+				type: 'options',
+				options: [
+					{
+						name: 'Auto',
+						value: 'auto',
+						description: 'Try native transcript, fallback to AI generation if unavailable',
+					},
+					{
+						name: 'Native',
+						value: 'native',
+						description: 'Only fetch existing transcript from the platform',
+					},
+					{
+						name: 'Generate',
+						value: 'generate',
+						description: 'Always generate transcript using AI',
+					},
+				],
+				default: 'auto',
+				displayOptions: {
+					show: {
+						resource: ['media'],
+						operation: ['getTranscript'],
+					},
+				},
+				description: 'The mode to use for transcript extraction',
 			},
 
 			// --------------------------------------------------------------------------------------------------------
@@ -83,23 +189,11 @@ export class Supadata implements INodeType {
 						description: 'Get videos of a YouTube playlist',
 						action: 'Get playlist videos',
 					},
-					{
-						name: 'Get Transcript',
-						value: 'getTranscript',
-						description: 'Get the transcript of a YouTube video',
-						action: 'Get video transcript',
-					},
-					{
-						name: 'Get Video',
-						value: 'getVideo',
-						description: 'Get details of a YouTube video',
-						action: 'Get video details',
-					},
 				],
-				default: 'getVideo',
+				default: 'getChannel',
 			},
 
-			// YouTube Video Fields
+			// YouTube Video Fields (kept for backward compatibility)
 			{
 				displayName: 'Video',
 				name: 'videoId',
@@ -113,7 +207,7 @@ export class Supadata implements INodeType {
 					},
 				},
 				placeholder: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-				description: 'The ID or URL of the YouTube video',
+				description: 'The ID or URL of the video (supports YouTube, TikTok, and other platforms)',
 			},
 			{
 				displayName: 'Return as Plain Text',
@@ -127,6 +221,50 @@ export class Supadata implements INodeType {
 					},
 				},
 				description: 'Whether to return the transcript as plain text',
+			},
+			{
+				displayName: 'Language',
+				name: 'lang',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['youtube'],
+						operation: ['getTranscript'],
+					},
+				},
+				placeholder: 'en',
+				description: 'Preferred language code (ISO 639-1). If not provided or unavailable, defaults to first available language.',
+			},
+			{
+				displayName: 'Mode',
+				name: 'mode',
+				type: 'options',
+				options: [
+					{
+						name: 'Auto',
+						value: 'auto',
+						description: 'Try native transcript, fallback to AI generation if unavailable',
+					},
+					{
+						name: 'Native',
+						value: 'native',
+						description: 'Only fetch existing transcript from the platform',
+					},
+					{
+						name: 'Generate',
+						value: 'generate',
+						description: 'Always generate transcript using AI',
+					},
+				],
+				default: 'auto',
+				displayOptions: {
+					show: {
+						resource: ['youtube'],
+						operation: ['getTranscript'],
+					},
+				},
+				description: 'The mode to use for transcript extraction',
 			},
 
 			// YouTube Channel Fields
@@ -247,33 +385,67 @@ export class Supadata implements INodeType {
 				const operation = this.getNodeParameter('operation', i) as string;
 				let responseData;
 
-				if (resource === 'youtube') {
-					if (operation === 'getVideo') {
-						const videoIdentifier = this.getNodeParameter('videoId', i) as string;
+				if (resource === 'media') {
+					if (operation === 'getMetadata') {
+						const videoUrl = this.getNodeParameter('videoUrl', i) as string;
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
-							'/youtube/video',
+							'/metadata',
 							{},
-							{ id: videoIdentifier },
+							{ url: videoUrl },
 						);
 					} else if (operation === 'getTranscript') {
-						const videoInput = this.getNodeParameter('videoId', i) as string;
+						const videoUrl = this.getNodeParameter('videoUrl', i) as string;
 						const qs: IDataObject = {
+							url: videoUrl,
 							text: this.getNodeParameter('text', i) as boolean,
+							mode: this.getNodeParameter('mode', i) as string,
 						};
 
-						// Check if input is a URL  or ID
-						if (videoInput.includes('youtube.com/') || videoInput.includes('youtu.be/')) {
-							qs.url = videoInput;
-						} else {
-							qs.videoId = videoInput;
+						// Add lang parameter if provided
+						const lang = this.getNodeParameter('lang', i) as string;
+						if (lang) {
+							qs.lang = lang;
 						}
 
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
-							'/youtube/transcript',
+							'/transcript',
+							{},
+							qs,
+						);
+					}
+				} else if (resource === 'youtube') {
+					// Backward compatibility for old YouTube operations
+					if (operation === 'getVideo') {
+						const videoIdentifier = this.getNodeParameter('videoId', i) as string;
+						responseData = await supadataApiRequest.call(
+							this,
+							'GET' as IHttpRequestMethods,
+							'/metadata',
+							{},
+							{ url: videoIdentifier },
+						);
+					} else if (operation === 'getTranscript') {
+						const videoInput = this.getNodeParameter('videoId', i) as string;
+						const qs: IDataObject = {
+							url: videoInput,
+							text: this.getNodeParameter('text', i) as boolean,
+							mode: this.getNodeParameter('mode', i) as string,
+						};
+
+						// Add lang parameter if provided
+						const lang = this.getNodeParameter('lang', i) as string;
+						if (lang) {
+							qs.lang = lang;
+						}
+
+						responseData = await supadataApiRequest.call(
+							this,
+							'GET' as IHttpRequestMethods,
+							'/transcript',
 							{},
 							qs,
 						);
