@@ -134,17 +134,22 @@ export class Supadata implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Default',
-						value: 'default',
-						description: 'Use the default transcript extraction method',
+						name: 'Auto',
+						value: 'auto',
+						description: 'Try native transcript, fallback to AI generation if unavailable',
 					},
 					{
-						name: 'AI Fallback',
-						value: 'ai',
-						description: 'Use AI-powered transcript extraction as a fallback',
+						name: 'Native',
+						value: 'native',
+						description: 'Only fetch existing transcript from the platform',
+					},
+					{
+						name: 'Generate',
+						value: 'generate',
+						description: 'Always generate transcript using AI',
 					},
 				],
-				default: 'default',
+				default: 'auto',
 				displayOptions: {
 					show: {
 						resource: ['youtube'],
@@ -280,21 +285,15 @@ export class Supadata implements INodeType {
 							'GET' as IHttpRequestMethods,
 							'/metadata',
 							{},
-							{ id: videoIdentifier },
+							{ url: videoIdentifier },
 						);
 					} else if (operation === 'getTranscript') {
 						const videoInput = this.getNodeParameter('videoId', i) as string;
 						const qs: IDataObject = {
+							url: videoInput,
 							text: this.getNodeParameter('text', i) as boolean,
 							mode: this.getNodeParameter('mode', i) as string,
 						};
-
-						// Check if input is a URL  or ID
-						if (videoInput.includes('youtube.com/') || videoInput.includes('youtu.be/')) {
-							qs.url = videoInput;
-						} else {
-							qs.videoId = videoInput;
-						}
 
 						responseData = await supadataApiRequest.call(
 							this,
