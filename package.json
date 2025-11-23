@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-supadata",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Tool for extracting content from YouTube videos and web pages",
   "keywords": [
     "n8n-community-node-package",

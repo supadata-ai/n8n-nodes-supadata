@@ -3,9 +3,7 @@ import { ICredentialType, INodeProperties, ICredentialTestRequest } from 'n8n-wo
 export class SupadataApi implements ICredentialType {
 	name = 'supadataApi';
 	displayName = 'Supadata API';
-	// Uses the link to this tutorial as an example
-	// Replace with your own docs links when building your own nodes
-	documentationUrl = 'https://supadata.ai/documentation/getting-started';
+	documentationUrl = 'https://docs.supadata.ai';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',

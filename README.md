@@ -59,7 +59,7 @@ To use this node, you need to authenticate with Supadata using an API key. Follo
 ## Resources
 
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-- [Supadata API Documentation](https://supadata.ai/documentation/getting-started)
+- [Supadata API Documentation](https://docs.supadata.ai)
 
 ## License
 
