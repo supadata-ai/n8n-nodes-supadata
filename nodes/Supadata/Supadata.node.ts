@@ -16,7 +16,7 @@ export class Supadata implements INodeType {
 		icon: 'file:supadata.svg',
 		group: ['input'],
 		version: 1,
-		description: 'Access Supadata API to fetch YouTube and web data',
+		description: 'Access Supadata API to fetch video metadata, transcripts, and web data from multiple platforms',
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		defaults: {
 			name: 'Supadata',
@@ -86,14 +86,14 @@ export class Supadata implements INodeType {
 					{
 						name: 'Get Transcript',
 						value: 'getTranscript',
-						description: 'Get the transcript of a YouTube video',
+						description: 'Get the transcript of a video from multiple platforms (YouTube, TikTok, etc.)',
 						action: 'Get video transcript',
 					},
 					{
 						name: 'Get Video',
 						value: 'getVideo',
-						description: 'Get details of a YouTube video',
-						action: 'Get video details',
+						description: 'Get metadata of a video from multiple platforms (YouTube, TikTok, etc.)',
+						action: 'Get video metadata',
 					},
 				],
 				default: 'getVideo',
@@ -113,7 +113,7 @@ export class Supadata implements INodeType {
 					},
 				},
 				placeholder: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-				description: 'The ID or URL of the YouTube video',
+				description: 'The ID or URL of the video (supports YouTube, TikTok, and other platforms)',
 			},
 			{
 				displayName: 'Return as Plain Text',
@@ -127,6 +127,31 @@ export class Supadata implements INodeType {
 					},
 				},
 				description: 'Whether to return the transcript as plain text',
+			},
+			{
+				displayName: 'Mode',
+				name: 'mode',
+				type: 'options',
+				options: [
+					{
+						name: 'Default',
+						value: 'default',
+						description: 'Use the default transcript extraction method',
+					},
+					{
+						name: 'AI Fallback',
+						value: 'ai',
+						description: 'Use AI-powered transcript extraction as a fallback',
+					},
+				],
+				default: 'default',
+				displayOptions: {
+					show: {
+						resource: ['youtube'],
+						operation: ['getTranscript'],
+					},
+				},
+				description: 'The mode to use for transcript extraction',
 			},
 
 			// YouTube Channel Fields
@@ -253,7 +278,7 @@ export class Supadata implements INodeType {
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
-							'/youtube/video',
+							'/metadata',
 							{},
 							{ id: videoIdentifier },
 						);
@@ -261,6 +286,7 @@ export class Supadata implements INodeType {
 						const videoInput = this.getNodeParameter('videoId', i) as string;
 						const qs: IDataObject = {
 							text: this.getNodeParameter('text', i) as boolean,
+							mode: this.getNodeParameter('mode', i) as string,
 						};
 
 						// Check if input is a URL  or ID
@@ -273,7 +299,7 @@ export class Supadata implements INodeType {
 						responseData = await supadataApiRequest.call(
 							this,
 							'GET' as IHttpRequestMethods,
-							'/youtube/transcript',
+							'/transcript',
 							{},
 							qs,
 						);
