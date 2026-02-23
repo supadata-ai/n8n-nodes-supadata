@@ -40,7 +40,6 @@ export class Supadata implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
-					{ name: 'Extract', value: 'extract' },
 					{ name: 'Media', value: 'media' },
 					{ name: 'YouTube', value: 'youtube' },
 					{ name: 'Web', value: 'webScrape' },
@@ -48,31 +47,7 @@ export class Supadata implements INodeType {
 				default: 'media',
 			},
 
-			// --------------------------------------------------------------------------------------------------------
-			//         Extract Operations (AI-powered structured data extraction)
-			// --------------------------------------------------------------------------------------------------------
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['extract'],
-					},
-				},
-				options: [
-					{
-						name: 'Extract Data',
-						value: 'extractData',
-						description: 'Extract structured data from a video using AI',
-						action: 'Extract structured data from a video',
-					},
-				],
-				default: 'extractData',
-			},
-
-			// Extract Fields
+			// Extract Fields (shown under Media resource)
 			{
 				displayName: 'URL',
 				name: 'extractUrl',
@@ -81,7 +56,7 @@ export class Supadata implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['extract'],
+						resource: ['media'],
 						operation: ['extractData'],
 					},
 				},
@@ -112,7 +87,7 @@ export class Supadata implements INodeType {
 				default: 'prompt',
 				displayOptions: {
 					show: {
-						resource: ['extract'],
+						resource: ['media'],
 						operation: ['extractData'],
 					},
 				},
@@ -129,7 +104,7 @@ export class Supadata implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['extract'],
+						resource: ['media'],
 						operation: ['extractData'],
 						extractInputMode: ['prompt', 'both'],
 					},
@@ -145,7 +120,7 @@ export class Supadata implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['extract'],
+						resource: ['media'],
 						operation: ['extractData'],
 						extractInputMode: ['schema', 'both'],
 					},
@@ -160,7 +135,7 @@ export class Supadata implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
-						resource: ['extract'],
+						resource: ['media'],
 						operation: ['extractData'],
 					},
 				},
@@ -204,6 +179,12 @@ export class Supadata implements INodeType {
 					},
 				},
 				options: [
+					{
+						name: 'Extract Structured Data',
+						value: 'extractData',
+						description: 'Extract structured data from a video using AI',
+						action: 'Extract structured data from a video',
+					},
 					{
 						name: 'Get Metadata',
 						value: 'getMetadata',
@@ -528,7 +509,7 @@ export class Supadata implements INodeType {
 				const operation = this.getNodeParameter('operation', i) as string;
 				let responseData;
 
-				if (resource === 'extract') {
+				if (resource === 'media') {
 					if (operation === 'extractData') {
 						const url = this.getNodeParameter('extractUrl', i) as string;
 						const inputMode = this.getNodeParameter('extractInputMode', i) as string;
@@ -563,9 +544,7 @@ export class Supadata implements INodeType {
 							pollInterval,
 							maxWaitTime,
 						);
-					}
-				} else if (resource === 'media') {
-					if (operation === 'getMetadata') {
+					} else if (operation === 'getMetadata') {
 						const videoUrl = this.getNodeParameter('videoUrl', i) as string;
 						responseData = await supadataApiRequest.call(
 							this,
