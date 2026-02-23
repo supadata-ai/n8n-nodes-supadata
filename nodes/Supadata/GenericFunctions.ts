@@ -73,3 +73,44 @@ export async function supadataApiRequestAllItems(
 
 	return returnData;
 }
+
+/**
+ * Poll a Supadata extract job until completion or timeout
+ */
+export async function supadataApiPollExtractJob(
+	this: IHookFunctions | IExecuteFunctions,
+	jobId: string,
+	pollIntervalSeconds: number = 5,
+	maxWaitTimeSeconds: number = 300,
+): Promise<any> {
+	const startTime = Date.now();
+	const maxWaitMs = maxWaitTimeSeconds * 1000;
+	const pollIntervalMs = pollIntervalSeconds * 1000;
+
+	while (Date.now() - startTime < maxWaitMs) {
+		const response = await supadataApiRequest.call(
+			this,
+			'GET' as IHttpRequestMethods,
+			`/extract/${jobId}`,
+		);
+
+		if (response.status === 'completed') {
+			return response;
+		}
+
+		if (response.status === 'failed') {
+			const errorMessage = response.error?.message || 'Extract job failed';
+			throw new NodeApiError(this.getNode(), {
+				message: errorMessage,
+				description: `Extract job ${jobId} failed`,
+			} as JsonObject);
+		}
+
+		await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+	}
+
+	throw new NodeApiError(this.getNode(), {
+		message: `Extract job timed out after ${maxWaitTimeSeconds} seconds`,
+		description: `Job ${jobId} did not complete within the configured wait time`,
+	} as JsonObject);
+}
