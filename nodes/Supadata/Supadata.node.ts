@@ -7,7 +7,7 @@ import {
 	type IHttpRequestMethods,
 } from 'n8n-workflow';
 
-import { supadataApiRequest } from './GenericFunctions';
+import { supadataApiRequest, supadataApiPollExtractJob } from './GenericFunctions';
 
 export class Supadata implements INodeType {
 	description: INodeTypeDescription = {
@@ -40,11 +40,154 @@ export class Supadata implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
+					{ name: 'Extract', value: 'extract' },
 					{ name: 'Media', value: 'media' },
 					{ name: 'YouTube', value: 'youtube' },
 					{ name: 'Web', value: 'webScrape' },
 				],
 				default: 'media',
+			},
+
+			// --------------------------------------------------------------------------------------------------------
+			//         Extract Operations (AI-powered structured data extraction)
+			// --------------------------------------------------------------------------------------------------------
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['extract'],
+					},
+				},
+				options: [
+					{
+						name: 'Extract Data',
+						value: 'extractData',
+						description: 'Extract structured data from a video using AI',
+						action: 'Extract structured data from a video',
+					},
+				],
+				default: 'extractData',
+			},
+
+			// Extract Fields
+			{
+				displayName: 'URL',
+				name: 'extractUrl',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['extract'],
+						operation: ['extractData'],
+					},
+				},
+				placeholder: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+				description: 'The URL of the video to extract data from',
+			},
+			{
+				displayName: 'Input Mode',
+				name: 'extractInputMode',
+				type: 'options',
+				options: [
+					{
+						name: 'Prompt',
+						value: 'prompt',
+						description: 'Describe what to extract in natural language',
+					},
+					{
+						name: 'Schema',
+						value: 'schema',
+						description: 'Provide a JSON Schema defining the output structure',
+					},
+					{
+						name: 'Prompt and Schema',
+						value: 'both',
+						description: 'Provide both a prompt and a JSON Schema',
+					},
+				],
+				default: 'prompt',
+				displayOptions: {
+					show: {
+						resource: ['extract'],
+						operation: ['extractData'],
+					},
+				},
+				description: 'How to specify what data to extract',
+			},
+			{
+				displayName: 'Prompt',
+				name: 'extractPrompt',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['extract'],
+						operation: ['extractData'],
+						extractInputMode: ['prompt', 'both'],
+					},
+				},
+				placeholder: 'Extract the main topics discussed, key quotes, and any statistics mentioned',
+				description: 'Natural language description of what data to extract from the video',
+			},
+			{
+				displayName: 'Schema',
+				name: 'extractSchema',
+				type: 'json',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['extract'],
+						operation: ['extractData'],
+						extractInputMode: ['schema', 'both'],
+					},
+				},
+				description: 'JSON Schema defining the structure of the extracted data',
+			},
+			{
+				displayName: 'Options',
+				name: 'extractOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['extract'],
+						operation: ['extractData'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Max Wait Time (Seconds)',
+						name: 'maxWaitTime',
+						type: 'number',
+						default: 300,
+						typeOptions: {
+							minValue: 30,
+							maxValue: 600,
+						},
+						description: 'Maximum time in seconds to wait for the extraction to complete',
+					},
+					{
+						displayName: 'Poll Interval (Seconds)',
+						name: 'pollInterval',
+						type: 'number',
+						default: 5,
+						typeOptions: {
+							minValue: 2,
+							maxValue: 30,
+						},
+						description: 'How often to check for results (in seconds)',
+					},
+				],
 			},
 
 			// --------------------------------------------------------------------------------------------------------
@@ -385,7 +528,43 @@ export class Supadata implements INodeType {
 				const operation = this.getNodeParameter('operation', i) as string;
 				let responseData;
 
-				if (resource === 'media') {
+				if (resource === 'extract') {
+					if (operation === 'extractData') {
+						const url = this.getNodeParameter('extractUrl', i) as string;
+						const inputMode = this.getNodeParameter('extractInputMode', i) as string;
+						const options = this.getNodeParameter('extractOptions', i) as IDataObject;
+
+						const body: IDataObject = { url };
+
+						if (inputMode === 'prompt' || inputMode === 'both') {
+							body.prompt = this.getNodeParameter('extractPrompt', i) as string;
+						}
+						if (inputMode === 'schema' || inputMode === 'both') {
+							const schemaValue = this.getNodeParameter('extractSchema', i);
+							body.schema = typeof schemaValue === 'string'
+								? JSON.parse(schemaValue)
+								: schemaValue;
+						}
+
+						const createResponse = await supadataApiRequest.call(
+							this,
+							'POST' as IHttpRequestMethods,
+							'/extract',
+							body,
+						);
+
+						const jobId = createResponse.jobId as string;
+						const pollInterval = (options.pollInterval as number) || 5;
+						const maxWaitTime = (options.maxWaitTime as number) || 300;
+
+						responseData = await supadataApiPollExtractJob.call(
+							this,
+							jobId,
+							pollInterval,
+							maxWaitTime,
+						);
+					}
+				} else if (resource === 'media') {
 					if (operation === 'getMetadata') {
 						const videoUrl = this.getNodeParameter('videoUrl', i) as string;
 						responseData = await supadataApiRequest.call(
