@@ -17,8 +17,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm install -g npm@latest
 
       - run: pnpm install --frozen-lockfile
 
@@ -26,4 +29,4 @@ jobs:
 
       - run: pnpm lint
 
-      - run: pnpm publish --provenance --no-git-checks
+      - run: npm publish --provenance --access public
