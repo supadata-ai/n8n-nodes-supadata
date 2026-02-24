@@ -6,7 +6,7 @@ import type {
 	IHttpRequestMethods,
 	IHttpRequestOptions,
 } from 'n8n-workflow';
-import { NodeApiError } from 'n8n-workflow';
+import { NodeApiError, sleep } from 'n8n-workflow';
 
 /**
  * Make an API request to Supadata
@@ -106,7 +106,7 @@ export async function supadataApiPollExtractJob(
 			} as JsonObject);
 		}
 
-		await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+		await sleep(pollIntervalMs);
 	}
 
 	throw new NodeApiError(this.getNode(), {
