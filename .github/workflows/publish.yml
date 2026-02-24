@@ -28,5 +28,3 @@ jobs:
       - run: pnpm lint
 
       - run: pnpm publish --provenance --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
